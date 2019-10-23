@@ -1,17 +1,25 @@
-# Imports needed for the script
-import numpy as np
 import pandas as pd
-import seaborn as sb
-import matplotlib.pyplot as plt
-%matplotlib inline
-plt.rcParams['figure.figsize'] = (16, 9)
-plt.style.use('ggplot')
-from sklearn import tree
-from sklearn.metrics import accuracy_score
-from sklearn.model_selection import KFold
-from sklearn.model_selection import cross_val_score
-from IPython.display import Image as PImage
-from subprocess import check_call
-from PIL import Image, ImageDraw, ImageFont
-datos.shape
-datos.head()
+import numpy as np 
+datos=pd.read_csv('energydata.csv')
+
+X= datos[['T8','T_out','Windspeed']]
+y= datos[['RH_8','RH_out']]
+
+from sklearn.model_selection import train_test_split
+X_train, X_test, y_train, y_test = train_test_split(X, y)
+
+from sklearn.preprocessing import StandardScaler
+scaler = StandardScaler()
+scaler.fit(X_train)
+X_train = scaler.transform(X_train)
+X_test = scaler.transform(X_test)
+
+from sklearn.neural_network import MLPClassifier
+mlp=MLPClassifier(hidden_layer_sizes=(10,10,10), max_iter=500, alpha=0.0001,
+                     solver='adam', random_state=21,tol=0.000000001)
+
+mlp.fit(X_train,y_train)
+predictions=mlp.predict(X_test)
+
+from sklearn.metrics import classification_report
+print(classification_report(y_test.predictions))
